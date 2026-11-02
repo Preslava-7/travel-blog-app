@@ -6,8 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 @Data
 public class BlogResponse {
@@ -17,7 +15,7 @@ public class BlogResponse {
     private String content;
     private Long authorId;
     private String authorUsername;
-    private int favouriteCount;
+    private int favoriteCount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
