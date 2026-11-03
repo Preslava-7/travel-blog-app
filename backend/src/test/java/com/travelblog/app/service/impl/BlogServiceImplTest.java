@@ -45,6 +45,7 @@ class BlogServiceImplTest {
         testUser = new User();
         testUser.setId(1L);
         testUser.setUsername("preslava");
+        testUser.setFavorites(new HashSet<>());
 
         testBlog = new Blog();
         testBlog.setId(100L);
@@ -106,14 +107,27 @@ class BlogServiceImplTest {
 
         blogService.favoriteBlog(100L, 1L);
 
-        assertTrue(testBlog.getFavoritedBy().contains(testUser));
-        verify(blogRepository, times(1)).save(testBlog);
+        assertTrue(testUser.getFavorites().contains(testBlog));
+        verify(userRepository, times(1)).save(testUser);
+    }
+
+    @Test
+    void unfavoriteBlog_Success() {
+        testUser.getFavorites().add(testBlog); 
+
+        when(blogRepository.findById(100L)).thenReturn(Optional.of(testBlog));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
+
+        blogService.unfavoriteBlog(100L, 1L);
+
+        assertFalse(testUser.getFavorites().contains(testBlog));
+        verify(userRepository, times(1)).save(testUser);
     }
 
     @Test
     void deleteBlog_ForbiddenForNonAuthor() {
         User anotherUser = new User();
-        anotherUser.setId(2L); // различен от автора (1L)
+        anotherUser.setId(2L);
 
         when(blogRepository.findById(100L)).thenReturn(Optional.of(testBlog));
 
