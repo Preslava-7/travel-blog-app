@@ -15,8 +15,19 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ApiResponse<Object>> handleRuntimeException(RuntimeException ex) {
+        ApiResponse<Object> response = ApiResponse.builder()
+                .success(false)
+                .message(ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ApiResponse<Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
             String fieldName = ((FieldError) error).getField();
@@ -24,7 +35,7 @@ public class GlobalExceptionHandler {
             errors.put(fieldName, errorMessage);
         });
 
-        ApiResponse> response = ApiResponse.>builder()
+        ApiResponse<Object> response = ApiResponse.builder()
                 .success(false)
                 .message("Validation failed")
                 .data(errors)
@@ -35,8 +46,13 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<Void>> handleGenericException(Exception ex) {
-        ApiResponse<Void> response = ApiResponse.error(ex.getMessage());
+    public ResponseEntity<ApiResponse<Object>> handleGenericException(Exception ex) {
+        ApiResponse<Object> response = ApiResponse.builder()
+                .success(false)
+                .message("An unexpected error occurred: " + ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
