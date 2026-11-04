@@ -3,14 +3,17 @@ package com.travelblog.app.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.travelblog.app.dto.blog.BlogCreateRequest;
 import com.travelblog.app.dto.blog.BlogResponse;
+import com.travelblog.app.security.JwtUtils;
 import com.travelblog.app.service.BlogService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -19,7 +22,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(BlogController.class)
+@WebMvcTest(controllers = BlogController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
 @AutoConfigureMockMvc(addFilters = false)
 class BlogControllerTest {
 
@@ -31,6 +34,12 @@ class BlogControllerTest {
 
     @MockBean
     private BlogService blogService;
+
+    @MockBean
+    private JwtUtils jwtUtils;
+
+    @MockBean
+    private UserDetailsService userDetailsService;
 
     private BlogResponse testResponse;
 
